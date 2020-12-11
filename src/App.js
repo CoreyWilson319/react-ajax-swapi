@@ -1,24 +1,27 @@
-import logo from './logo.svg';
+import { BrowserRouter, Route } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './App.css';
 
 function App() {
+
+  const [ships, setShips] = useState([]);
+
+  const addShips = () => {
+    let url = 'https://swapi.dev/api/starships/'
+    axios.get(url)
+    .then(response => {
+      let starships = response.data.results
+      setShips(starships)
+      })
+  }
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+      <Route />
+      </div>
+    </BrowserRouter>
   );
 }
 
