@@ -1,26 +1,53 @@
 import axios from 'axios';
-import React from 'react';
+import React, { useEffect, useState }from 'react';
 import { Link } from 'react-router-dom';
 function StarshipsDetails (props) {
-    console.log(props.location.state)
+    // console.log(props.location.state)
+    const [pilots, setPilots] = useState([])
 
     const pilotsFunction = () => {
         if (props.location.state.pilots < 1) {
-            return <li>Pilots: No Pilots</li>
+            return
         } else {
+            let pilotCalls = []
             props.location.state.pilots.forEach(pilot => {
-                let url = pilot
-                console.log(pilot)
-                axios.get(url)
-                .then(response => {
-                    console.log(response.data.name)
-                    return <li>{response.data.name}</li>
-                  }).catch((err) => console.log(err))
-              })
+                const call = axios.get(pilot)
+                pilotCalls.push(call)
+            });
+            Promise.all(pilotCalls).then((response) => {
+                let names = response.map((res) => {
+                    return res.data.name
+                })
+                setPilots(names)
+            })
+            .catch((err)=>console.log(err))
+            // props.location.state.pilots.forEach(pilot => {
+            //     let url = pilot
+            //     // console.log(pilot)
+            //     axios.get(url)
+            //     .then(response => {
+            //         setPilots([...pilots, response.data.name])
+            //       }).catch((err) => console.log(err))
+            //   })
             }
-            
-        
     }
+
+    useEffect(() => {
+      pilotsFunction()  
+    },[])
+
+    const renderPilots = () => {
+        if (pilots.length < 1) 
+            { return <li> No Pilots</li>}
+         else
+        {
+            return pilots.map((pilot, index) => {
+                // console.log(pilot)
+                return <li key={index}> {pilot}</li>
+            })
+        }
+    }
+
     return(
         <ul>
             <li>
@@ -44,7 +71,10 @@ function StarshipsDetails (props) {
             <li>
             Class: {props.location.state.starship_class}
             </li>
-            {pilotsFunction()}
+            Pilots: {renderPilots()}
+            <br></br>
+            
+
             <Link to="/">Home</Link>
         </ul>
     );
